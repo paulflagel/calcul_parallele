@@ -12,4 +12,4 @@ pi_cercle_unite: pi_cercle_unite.cpp
 # Game of life
 
 clean:
-	rm *.o pi_cercle_unite
+	rm pi_cercle_unite
