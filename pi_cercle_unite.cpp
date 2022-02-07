@@ -2,10 +2,13 @@
 #include <future>
 #include <iostream>
 #include <cmath>
+#include <mutex>
 
-#define NB_THREADS 8
+#define NB_THREADS 4
 
-void get_nb_hits(std::atomic<int> &total_hits, int nb_shots, int num_thread)
+std::mutex m;
+
+void get_nb_hits(int &total_hits, int nb_shots, int num_thread)
 {
     std::srand(time(nullptr) + num_thread); // random seed
     std::cout << "thread " << num_thread << " launched" << std::endl;
@@ -22,14 +25,15 @@ void get_nb_hits(std::atomic<int> &total_hits, int nb_shots, int num_thread)
             nb_hits++;
         }
     }
+    m.lock();
     total_hits += nb_hits;
-    std::cout << 4. * nb_hits / nb_shots << std::endl;
+    m.unlock();
 }
 
 int main()
 {
-    long nb_shots_per_thread = 1E7;
-    std::atomic<int> total_hits = 0;
+    long nb_shots_per_thread = 1E6;
+    int total_hits = 0;
 
     std::cout << "Performing Monte-Carlo pi approximation for " << nb_shots_per_thread * NB_THREADS << " shots and " << NB_THREADS << " threads..." << std::endl;
     // Calcul du temps d'exécution
