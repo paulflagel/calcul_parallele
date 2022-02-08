@@ -1,22 +1,29 @@
 #include <thread>
 #include <future>
 #include <iostream>
-#include <cmath>
+#include <random>
 #include <mutex>
 
-#define NB_THREADS 4
+#define NB_THREADS 8
 
 std::mutex m;
 
-void get_nb_hits(int &total_hits, int nb_shots, int num_thread)
+double get_rand(int thread_id)
 {
-    std::srand(time(nullptr) + num_thread); // random seed
-    std::cout << "thread " << num_thread << " launched" << std::endl;
+    // Thread safe generator
+    static thread_local std::mt19937 rng(time(nullptr) + thread_id);
+    std::uniform_real_distribution<double> uniform(0.0, 1.0);
+    return uniform(rng);
+}
+
+void get_nb_hits(int &total_hits, int nb_shots, int thread_id)
+{
+    std::cout << "thread " << thread_id << " launched" << std::endl;
     int nb_hits = 0;
     for (int k = 0; k < nb_shots; k++)
     {
-        double x = ((double)rand()) / RAND_MAX;
-        double y = ((double)rand()) / RAND_MAX;
+        double x = get_rand(thread_id);
+        double y = get_rand(thread_id);
 
         bool hit = (x * x) + (y * y) <= 1.;
 
@@ -32,7 +39,7 @@ void get_nb_hits(int &total_hits, int nb_shots, int num_thread)
 
 int main()
 {
-    long nb_shots_per_thread = 1E6;
+    long nb_shots_per_thread = 1E5;
     int total_hits = 0;
 
     std::cout << "Performing Monte-Carlo pi approximation for " << nb_shots_per_thread * NB_THREADS << " shots and " << NB_THREADS << " threads..." << std::endl;
