@@ -1,5 +1,4 @@
 #include <thread>
-#include <future>
 #include <iostream>
 #include <random>
 #include <mutex>
@@ -18,7 +17,9 @@ double get_rand(int thread_id)
 
 void get_nb_hits(int &total_hits, int nb_shots, int thread_id)
 {
+    m.lock();
     std::cout << "thread " << thread_id << " launched" << std::endl;
+    m.unlock();
     int nb_hits = 0;
     for (int k = 0; k < nb_shots; k++)
     {
@@ -39,7 +40,7 @@ void get_nb_hits(int &total_hits, int nb_shots, int thread_id)
 
 int main()
 {
-    long nb_shots_per_thread = 1E5;
+    long nb_shots_per_thread = 1E6;
     int total_hits = 0;
 
     std::cout << "Performing Monte-Carlo pi approximation for " << nb_shots_per_thread * NB_THREADS << " shots and " << NB_THREADS << " threads..." << std::endl;
