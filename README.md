@@ -30,6 +30,8 @@ g++ gameoflife.cpp -o gol -lpthread -std=c++17
 
 Implémentation du jeu de la vie en multithread. Chaque thread s'occupe d'une portion de la grille et compte le nombre de voisins de chaque cellule. Le thread principal se charge ensuite d'actualiser la grille.
 
+Il faut ici un nombre de thread égal à un nombre au carré pour pouvoir partager la grille sur tous les threads (4,9,16).
+
 Vous avez le choix entre une initialisation random de la grille (choix `y/n`) :
 
 ![](./img/gol.gif)
