@@ -1,4 +1,4 @@
-// g++ gameoflife.cpp -o gol -lpthread -std=c++17 -fdiagnostics-color=always
+// g++ gameoflife.cpp -o gol -lpthread -std=c++17
 
 #include <iostream>
 #include <unistd.h>
@@ -9,9 +9,9 @@
 #include <mutex>
 #include <random>
 
-#define NB_THREADS 4 // Doit être une racine carrée pour être partagé équitablement sur la grille (2,4,9,16)
+#define NB_THREADS 4 // Doit être un carré pour être partagé équitablement sur la grille (2,4,9,16)
 
-const int nb_cells = 16; // Longueur du carré dont s'occupe chaque thread
+const int nb_cells = 18; // Longueur du carré dont s'occupe chaque thread
 std::mutex mutex;        // Verrou
 
 std::random_device dev;                                   // Seed pour le rng
@@ -39,11 +39,11 @@ void printGrid()
         {
             if (grid[x][y] == true)
             {
-                std::cout << " X ";
+                std::cout << " ■ ";
             }
             else
             {
-                std::cout << " . ";
+                std::cout << "   ";
             }
             if (y == grid_size)
             {
@@ -181,7 +181,7 @@ int main()
                 threads[k].join();
             }
             updateGrid();
-            usleep(50000);
+            usleep(100000);
         }
     }
     else
