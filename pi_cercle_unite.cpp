@@ -1,3 +1,5 @@
+// g++ pi_cercle_unite.cpp -o pi -lpthread -std=c++17
+
 #include <thread>
 #include <iostream>
 #include <random>
@@ -7,10 +9,11 @@
 
 std::mutex m;
 
-double get_rand(int thread_id)
+double get_rand()
 {
     // Thread safe generator
-    static thread_local std::mt19937 rng(time(nullptr) + thread_id);
+    static int thread_hash = std::hash<std::thread::id>()(std::this_thread::get_id());
+    static thread_local std::mt19937 rng(time(nullptr) + thread_hash);
     std::uniform_real_distribution<double> uniform(0.0, 1.0);
     return uniform(rng);
 }
@@ -23,8 +26,8 @@ void get_nb_hits(int &total_hits, int nb_shots, int thread_id)
     int nb_hits = 0;
     for (int k = 0; k < nb_shots; k++)
     {
-        double x = get_rand(thread_id);
-        double y = get_rand(thread_id);
+        double x = get_rand();
+        double y = get_rand();
 
         bool hit = (x * x) + (y * y) <= 1.;
 
@@ -47,7 +50,7 @@ int main()
     // Calcul du temps d'exécution
     auto start = std::chrono::high_resolution_clock::now();
 
-    //Instanciation des threads
+    // Instanciation des threads
     std::thread threads[NB_THREADS];
     for (int k = 0; k < NB_THREADS; k++)
     {
