@@ -31,7 +31,7 @@ void clearTerminal()
 void printGrid()
 {
     // Affiche la grille de l'état actuel
-    // clearTerminal();
+    clearTerminal();
     std::cout << "\n"
               << std::endl;
     for (int x = 1; x < grid_size + 1; x++)
