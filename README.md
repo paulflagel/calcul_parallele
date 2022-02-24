@@ -21,6 +21,15 @@ Donc `pi = 4*N_hits/N`.
 
 ## Billes
 
+```
+g++ billes.cpp -o billes -lpthread -std=c++17
+./billes
+```
+
+Chaque thread `i` représente un travailleur ayant besoin de `n_i` billes pour effectuer sa tâche. Il n'y a que `N` billes en tout et la somme des `n_i` est inférieure à `N`. Chaque travailleur doit donc, indépendemment des autres, demander si assez de billes sont disponibles. Si oui, ces billes lui sont attriubuées pour une certaine durée, et sont donc retirées de la réserve commune. Le travailleur rend ensuite les billes une fois sa tâche terminée.
+
+Un thread contrôleur vérifie à intervalles de temps réguliers que le nombre de billes de la réserve commune est bien compris entre 0 et `N` (cependant, comme l'accès à cette variable globale est protégé, cela n'est pas censé arriver).
+
 ## Game of life
 
 ```
@@ -29,8 +38,6 @@ g++ gameoflife.cpp -o gol -lpthread -std=c++17
 ```
 
 Implémentation du jeu de la vie en multithread. Chaque thread s'occupe d'une portion de la grille et compte le nombre de voisins de chaque cellule. Le thread principal se charge ensuite d'actualiser la grille.
-
-Il faut ici un nombre de thread égal à un nombre au carré pour pouvoir partager la grille sur tous les threads (4,9,16).
 
 Vous avez le choix entre une initialisation random de la grille (choix `y/n`) :
 
