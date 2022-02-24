@@ -9,15 +9,16 @@
 #include <mutex>
 #include <random>
 
-#define NB_THREADS 4 // Doit être un carré pour être partagé équitablement sur la grille (2,4,9,16)
+#define NB_THREADS_PER_LINE 2
 
+const int nb_threads = NB_THREADS_PER_LINE * NB_THREADS_PER_LINE;
 const int nb_cells = 18; // Longueur du carré dont s'occupe chaque thread
 std::mutex mutex;        // Verrou
 
 std::random_device dev;                                   // Seed pour le rng
 std::mt19937 rng(dev());                                  // Random number generator
 std::uniform_real_distribution<double> uniform(0.0, 1.0); // Distribution uniforme entre 0 et 1
-const int grid_size = NB_THREADS / 2 * nb_cells;          // Pour avoir un multiple du nombre de threads
+const int grid_size = NB_THREADS_PER_LINE * nb_cells;     // Pour avoir un multiple du nombre de threads
 bool grid[grid_size + 1][grid_size + 1] = {};             // Grille de taille grid_size+1 pour éviter les effets de bord
 int neighbors[grid_size + 1][grid_size + 1];              // Nombre de voisins de chaque case
 
@@ -30,7 +31,7 @@ void clearTerminal()
 void printGrid()
 {
     // Affiche la grille de l'état actuel
-    clearTerminal();
+    // clearTerminal();
     std::cout << "\n"
               << std::endl;
     for (int x = 1; x < grid_size + 1; x++)
@@ -43,7 +44,7 @@ void printGrid()
             }
             else
             {
-                std::cout << "   ";
+                std::cout << " . ";
             }
             if (y == grid_size)
             {
@@ -106,9 +107,9 @@ void initializeGrid()
 
 void getNextState(int thread_id)
 {
-    for (int x = 1 + (thread_id % (NB_THREADS / 2)) * nb_cells; x < 1 + (thread_id % (NB_THREADS / 2) + 1) * nb_cells; x++)
+    for (int x = 1 + (thread_id % NB_THREADS_PER_LINE) * nb_cells; x < 1 + (thread_id % NB_THREADS_PER_LINE + 1) * nb_cells; x++)
     {
-        for (int y = 1 + (thread_id / (NB_THREADS / 2)) * nb_cells; y < 1 + (thread_id / (NB_THREADS / 2) + 1) * nb_cells; y++)
+        for (int y = 1 + (thread_id / NB_THREADS_PER_LINE) * nb_cells; y < 1 + (thread_id / NB_THREADS_PER_LINE + 1) * nb_cells; y++)
         {
             mutex.lock();
             neighbors[x][y] = 0; // Nombre de voisins actifs
@@ -158,7 +159,7 @@ void updateGrid()
 
 int main()
 {
-    std::thread threads[NB_THREADS];
+    std::thread threads[nb_threads];
 
     initializeGrid();
     printGrid();
@@ -172,11 +173,11 @@ int main()
         while (true)
         {
             printGrid();
-            for (int k = 0; k < NB_THREADS; k++)
+            for (int k = 0; k < nb_threads; k++)
             {
                 threads[k] = std::thread(getNextState, k);
             }
-            for (int k = 0; k < NB_THREADS; k++)
+            for (int k = 0; k < nb_threads; k++)
             {
                 threads[k].join();
             }
