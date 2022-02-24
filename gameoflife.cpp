@@ -44,7 +44,7 @@ void printGrid()
             }
             else
             {
-                std::cout << " . ";
+                std::cout << "   ";
             }
             if (y == grid_size)
             {
