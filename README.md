@@ -17,7 +17,14 @@ Soit `N` le nombre d'impacts et `N_hits` le nombre d'impacts dans le cercle, alo
 
 Donc `pi = 4*N_hits/N`.
 
-## Tri
+## Tri fusion
+
+```
+g++ mergesort.cpp -o mergesort -lpthread -std=c++17
+./mergesort
+```
+
+Implémentation du tri fusion sur 4 threads de façon récursive.
 
 ## Billes
 
